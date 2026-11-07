@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Totli baliq — tirik baliq va issiq taomlar</title>
+  <meta name="description" content="Totli baliq: tirik baliq, issiq taomlar, xona band qilish va onlayn buyurtma.">
+  <meta name="theme-color" content="#06141b">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('tb-tema'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-fish" viewBox="0 0 80 48">
+      <path d="M6 24C18 3 46 3 62 24 46 45 18 45 6 24Z" fill="currentColor"/>
+      <path d="M58 24 78 7 73 24 78 41Z" fill="currentColor"/>
+      <path d="M28 7C34 0 44 1 48 8 42 9 34 9 28 7Z" fill="currentColor" opacity=".7"/>
+      <circle cx="19" cy="21" r="2.6" fill="#06141b"/>
+      <path d="M31 12C27 20 27 28 31 36" fill="none" stroke="#06141b" stroke-opacity=".25" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 7H6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  </svg>
+
+  <header class="top">
+    <a class="brand" href="#bosh" aria-label="Totli baliq — bosh sahifa">
+      <span class="logo"><svg class="ic fill"><use href="#i-fish"/></svg></span>
+      <b>Totli baliq</b>
+    </a>
+    <nav class="links" id="nav">
+      <a href="#bosh" data-go="bosh">Menyu</a>
+      <a href="#buyurtma" data-go="buyurtma">Buyurtma<span id="cartBadge" class="badge" hidden></span></a>
+      <a href="#xonalar" data-go="xonalar">Xonalar</a>
+      <a href="#admin" data-go="admin">Admin</a>
+    </nav>
+    <button type="button" id="installBtn" class="tool-btn wide" hidden><svg class="ic"><use href="#i-download"/></svg><span>O‘rnatish</span></button>
+    <button type="button" id="themeBtn" class="tool-btn" aria-label="Yorug‘/qorong‘i rejim" title="Yorug‘/qorong‘i rejim"><svg class="ic"><use href="#i-sun"/></svg></button>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+  <main id="view" aria-live="polite"></main>
+
+  <a id="cartBar" class="cartbar" href="#buyurtma" hidden>
+    <svg class="ic"><use href="#i-cart"/></svg>
+    <span id="cartInfo"></span>
+    <b>Buyurtma berish →</b>
+  </a>
+
+  <footer class="foot">© Totli baliq · Tirik baliq va issiq taomlar</footer>
+  <p id="toast" role="status"></p>
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <script src="app.js"></script>
+  <script src="admin.js"></script>
+  <script>App.start();</script>
+</body>
+</html>
