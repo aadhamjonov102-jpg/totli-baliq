@@ -1,7 +1,7 @@
 {
   "name": "Totli baliq",
   "short_name": "Totli baliq",
-  "description": "Tirik baliq, issiq taomlar va onlayn buyurtma",
+  "description": "Tirik baliq va onlayn buyurtma",
   "lang": "uz",
   "start_url": "./index.html",
   "scope": "./",

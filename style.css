@@ -327,3 +327,10 @@ body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-even
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
 
 .table.on, .table.on:hover:not(:disabled) { border-color: var(--coral); background: #ff7a4533; }
+
+/* ---------- Murojaat telefoni ---------- */
+.hero-tel { display: inline-block; margin-top: 16px; color: #d3f1f6; text-decoration: none; font-size: 15px; }
+.hero-tel b { color: #fff; border-bottom: 2px solid var(--coral); }
+.hero-tel:hover b { color: #ffb066; }
+.foot-tel { margin-top: 4px; }
+.foot-tel a { color: var(--accent); font-weight: 700; text-decoration: none; }

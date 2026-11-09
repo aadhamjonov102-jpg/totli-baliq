@@ -236,8 +236,9 @@ const App = (function () {
     hero.innerHTML = '<div class="rays" aria-hidden="true"></div>'
       + '<div class="hero-txt"><span class="chip-live">● Tirik baliq hovuzdan</span>'
       + '<h1>Totli <em>baliq</em></h1>'
-      + '<p>Hovuzdan stolingizgacha: tirik baliq ham, issiq tayyor taom ham. Oldindan buyurtma bering, kelganingizda hammasi tayyor.</p>'
+      + '<p>Tirik baliq to‘g‘ridan-to‘g‘ri hovuzdan: o‘zingiz tanlang, biz tortib beramiz. Oldindan buyurtma bering, kelganingizda baliq tayyor.</p>'
       + '<div class="cta"><a class="btn" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" href="#xonalar">Xona band qilish</a></div>'
+      + '<a class="hero-tel" href="tel:+998906962151">Murojaat uchun: <b>+998 90 696 21 51</b></a>'
       + '<ul class="facts"><li><b>' + MENU.rooms + '</b><span>xona</span></li><li><b>' + MENU.open + ':00–' + MENU.close + ':00</b><span>ish vaqti</span></li><li><b>Tirik</b><span>baliq olib ketish</span></li></ul></div>'
       + '<div class="hero-art" aria-hidden="true"><svg class="fish big" viewBox="0 0 80 48"><use href="#i-fish"/></svg>'
       + '<svg class="fish mini m1" viewBox="0 0 80 48"><use href="#i-fish"/></svg><svg class="fish mini m2" viewBox="0 0 80 48"><use href="#i-fish"/></svg>'
@@ -345,7 +346,7 @@ const App = (function () {
         h('div', { class: 'field' }, h('label', { htmlFor: 'ophone' }, 'Telefon (+998)'), phone)),
       h('div', { class: 'field' }, h('label', { htmlFor: 'onote' }, 'Izoh'), note),
       trap, err, submit,
-      h('p', { class: 'note' }, 'Buyurtma qabul qilingach restoran xodimlariga darhol xabar boradi. Zarur bo‘lsa, siz bilan bog‘lanamiz.'));
+      h('p', { class: 'note' }, 'Buyurtma qabul qilingach xodimlarga darhol xabar boradi. Savol bo‘lsa, qo‘ng‘iroq qiling: +998 90 696 21 51'));
     form.addEventListener('submit', async (e) => {
       e.preventDefault(); err.textContent = '';
       const p = phoneDigits(phone.value);
@@ -375,7 +376,7 @@ const App = (function () {
       h('h1', null, 'Buyurtma qabul qilindi!'),
       h('p', null, '№' + s.id + ' · ' + dayLabel(s.date) + ', soat ' + s.time + (s.room ? ' · ' + s.room + '-xona' : ' · olib ketasiz')),
       h('p', { class: 'big-total' }, money(s.total)),
-      h('p', { class: 'note' }, 'Restoran xodimlariga xabar yuborildi. Rahmat, sizni kutamiz!'),
+      h('p', { class: 'note' }, 'Xodimlarga xabar yuborildi. Rahmat, sizni kutamiz! Savol bo‘lsa: +998 90 696 21 51'),
       h('a', { class: 'btn', href: '#bosh' }, 'Menyuga qaytish')));
     window.scrollTo(0, 0);
   }
