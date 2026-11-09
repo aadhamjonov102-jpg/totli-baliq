@@ -386,7 +386,7 @@ const App = (function () {
         const r = await api('order', { name: name.value, phone: p, mode: f.mode, date: f.date, time: f.time, room: f.room, note: note.value, site: trap.value,
           items: Cart.items.map((x) => ({ id: x.id, kg: x.kg, live: !!x.live })) });
         save('tb-name', name.value); save('tb-phone', phone.value);
-        const sum = { id: r.id, date: f.date, time: f.time, room: f.mode === 'xona' ? f.room : 0, total: r.total };
+        const sum = { id: r.id, date: f.date, time: f.time, room: f.mode === 'xona' ? f.room : 0, total: r.total, tg: r.tg || '' };
         Cart.clear(); confetti(); viewDone(v, sum);
       } catch (ex) {
         err.textContent = ex.message; submit.disabled = false; submit.textContent = 'Buyurtmani yuborish';
@@ -404,7 +404,9 @@ const App = (function () {
       h('p', null, '№' + s.id + ' · ' + dayLabel(s.date) + ', soat ' + s.time + (s.room ? ' · ' + s.room + '-xona' : ' · olib ketasiz')),
       h('p', { class: 'big-total' }, money(s.total)),
       h('p', { class: 'note' }, 'Xodimlarga xabar yuborildi. Rahmat, sizni kutamiz! Savol bo‘lsa: +998 90 696 21 51'),
-      h('a', { class: 'btn', href: '#bosh' }, 'Menyuga qaytish')));
+      s.tg ? h('div', { class: 'tg-box' }, h('p', null, 'Buyurtma holatini Telegramda bilib turing: qabul qilindi, tayyor bo‘ldi.'),
+        h('a', { class: 'btn tg', href: s.tg, target: '_blank', rel: 'noopener' }, 'Telegramda xabar olish')) : '',
+      h('a', { class: 'btn ghost2', href: '#bosh' }, 'Menyuga qaytish')));
     window.scrollTo(0, 0);
   }
 

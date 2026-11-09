@@ -363,3 +363,8 @@ body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-even
 @media (prefers-reduced-motion: reduce) { .sw, .bob, .lf .tail, .lf .fin, .bub, .weeds i { animation: none !important; } .sw { left: 20%; } }
 .hero-txt h1 { text-shadow: none; }
 .hero-txt h1 em { filter: drop-shadow(0 2px 10px #04202c99); }
+
+.tg-box { margin: 16px 0 6px; padding: 14px; border-radius: 16px; background: #2aabee1f; border: 1px solid #2aabee55; }
+.tg-box p { margin: 0 0 10px; }
+.btn.tg { background: #2aabee; color: #fff; display: inline-flex; align-items: center; gap: 8px; }
+.btn.ghost2 { background: transparent; color: var(--text); border: 1px solid var(--line, #8886); }
