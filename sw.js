@@ -1,6 +1,6 @@
 'use strict';
 /* Oddiy xizmat ishchisi: avval internetdan oladi, internet bo'lmasa saqlangan nusxani ko'rsatadi. */
-const KESH = 'totli-baliq-v1';
+const KESH = 'totli-baliq-v2';
 const FAYLLAR = ['./', 'index.html', 'style.css', 'app.js', 'admin.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (e) => {

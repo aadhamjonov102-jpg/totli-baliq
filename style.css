@@ -225,3 +225,105 @@ button.btn { background: var(--coral); color: #fff; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 .cartbar { white-space: nowrap; }
 @media (max-width: 480px) { .cartbar { font-size: 14px; padding: 11px 16px; gap: 8px; } }
+
+/* =====================================================
+   V2: yanada jonli dizayn
+   ===================================================== */
+body { font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+h1, h2, .brand b, .page-title, .sec { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; }
+body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(900px 500px at 85% -10%, #14b8c922, transparent 60%), radial-gradient(700px 500px at -10% 40%, #ff7a4514, transparent 60%); }
+.top { box-shadow: 0 8px 30px #0003; }
+.logo { box-shadow: 0 6px 16px #ff7a4566; }
+.btn, button { position: relative; overflow: hidden; }
+.btn::after, button.small::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, #ffffff40 50%, transparent 70%); transform: translateX(-120%); transition: transform .6s; }
+.btn:hover::after, button.small:hover::after { transform: translateX(120%); }
+
+/* ---------- Bosh banner ---------- */
+.hero { position: relative; overflow: hidden; isolation: isolate; min-height: 430px; padding: 46px 40px 90px; background: radial-gradient(120% 100% at 80% 0%, #17a2b8 0%, #0a5d72 40%, #08283a 100%); }
+.hero h1 { font-weight: 800; font-size: clamp(42px, 7vw, 72px); letter-spacing: -.02em; }
+.hero h1 em { font-style: italic; background: linear-gradient(90deg, #ffb066, #ff7a45); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.rays { position: absolute; inset: -20% -10% auto; height: 120%; z-index: -1; opacity: .35; filter: blur(2px);
+  background: repeating-conic-gradient(from 200deg at 70% -10%, #ffffff33 0deg 4deg, transparent 4deg 14deg); animation: sway 14s ease-in-out infinite alternate; mask-image: linear-gradient(#000, transparent 80%); -webkit-mask-image: linear-gradient(#000, transparent 80%); }
+@keyframes sway { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+.facts { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 24px 0 0; }
+.facts li { background: #ffffff18; border: 1px solid #ffffff30; backdrop-filter: blur(6px); border-radius: 14px; padding: 8px 14px; display: grid; line-height: 1.2; }
+.facts b { font-size: 17px; } .facts span { font-size: 12px; color: #c8eef4; }
+.hero-art { min-height: 250px; }
+.fish.big { width: min(300px, 90%); animation: swim 6s ease-in-out infinite; }
+.fish.mini { position: absolute; width: 56px; color: #ffd0a8; opacity: .8; }
+.fish.m1 { left: 4%; top: 12%; animation: cross 14s linear infinite; } .fish.m2 { left: 8%; bottom: 20%; width: 38px; opacity: .55; animation: cross 19s linear infinite 4s; }
+@keyframes cross { from { transform: translateX(260px) scaleX(-1); } to { transform: translateX(-60px) scaleX(-1); } }
+.b5 { left: 66%; bottom: 8%; width: 12px; height: 12px; animation-delay: 3s; }
+.waves { position: absolute; left: 0; right: 0; bottom: 0; height: 80px; z-index: 1; overflow: hidden; pointer-events: none; }
+.waves svg { position: absolute; left: 0; bottom: 0; width: 200%; height: 100%; }
+.waves .w1 { fill: var(--bg); opacity: .5; } .waves .w2 { fill: var(--bg); }
+.waves svg:nth-child(1) { animation: wave 11s linear infinite; } .waves svg:nth-child(2) { animation: wave 7s linear infinite reverse; }
+@keyframes wave { to { transform: translateX(-50%); } }
+
+/* ---------- Taom kartalari: foto, 3D ---------- */
+.sec { font-weight: 800; font-size: 28px; }
+.sec::after { content: ''; display: block; width: 54px; height: 5px; border-radius: 9px; margin-top: 8px; background: linear-gradient(90deg, var(--coral), var(--accent)); }
+.menu { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
+.dish { position: relative; transition: transform .25s cubic-bezier(.2,.8,.2,1), border-color .25s, box-shadow .3s; will-change: transform; transform-style: preserve-3d; }
+.dish:hover { box-shadow: 0 24px 50px #0006, 0 0 0 1px var(--accent); }
+.dish-photo { position: relative; height: 190px; overflow: hidden; background: #0a3b4d; }
+.dish-photo .fish-art { position: absolute; inset: 0; height: 100%; }
+.dish-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.08); transition: opacity .6s, transform 1.2s cubic-bezier(.2,.8,.2,1); }
+.dish-photo.loaded img { opacity: 1; transform: scale(1); }
+.dish:hover .dish-photo.loaded img { transform: scale(1.07); }
+.dish-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #04121add 0%, transparent 55%); pointer-events: none; }
+.live-badge { position: absolute; z-index: 2; top: 12px; left: 12px; background: #34d399; color: #022b1c; font-size: 12px; font-weight: 800; padding: 3px 12px 3px 24px; border-radius: 999px; box-shadow: 0 4px 12px #0005; }
+.live-badge::before { content: ''; position: absolute; left: 9px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: #022b1c; animation: pulse 1.6s ease-out infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 #022b1c88; } 100% { box-shadow: 0 0 0 9px #022b1c00; } }
+.dish-body h3 { font-family: 'Fraunces', Georgia, serif; font-size: 21px; }
+.price { font-size: 18px; }
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease var(--d, 0ms), transform .7s cubic-bezier(.2,.8,.2,1) var(--d, 0ms); }
+.reveal.in { opacity: 1; transform: none; }
+.dish.reveal.in { transition: transform .25s cubic-bezier(.2,.8,.2,1), border-color .25s, box-shadow .3s, opacity .7s ease var(--d, 0ms); }
+
+/* ---------- Savatga uchadigan baliq ---------- */
+.flyfish { position: fixed; z-index: 60; width: 36px; height: 22px; color: var(--coral); pointer-events: none; filter: drop-shadow(0 4px 6px #0006); }
+.flyfish svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.badge.bump { animation: bump .5s ease; }
+@keyframes bump { 40% { transform: scale(1.6); } }
+
+/* ---------- Xonalar: zal rejasi ---------- */
+.plan { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; padding: 18px; border-radius: 20px; background: repeating-linear-gradient(45deg, #ffffff06 0 14px, transparent 14px 28px), linear-gradient(160deg, #0b3a4b, #081d29); border: 1px solid var(--line); position: relative; }
+:root[data-theme="light"] .plan { background: repeating-linear-gradient(45deg, #0a8fa310 0 14px, transparent 14px 28px), linear-gradient(160deg, #d9eef3, #c4e3ec); }
+.table { position: relative; display: grid; justify-items: center; align-content: center; gap: 0; aspect-ratio: 1.15; padding: 8px 4px; border-radius: 18px; background: #12303d; color: var(--text); border: 2px solid #34d39966; font-size: 22px; transition: transform .2s, background .2s, border-color .2s; }
+:root[data-theme="light"] .table { background: #fff; }
+.table b { font-family: 'Fraunces', Georgia, serif; line-height: 1; }
+.table small { font-size: 11px; font-weight: 700; color: var(--green); }
+.table:hover:not(:disabled) { transform: translateY(-4px) scale(1.04); border-color: var(--green); }
+.table.on { background: #ff7a4533; border-color: var(--coral); box-shadow: 0 0 0 4px #ff7a4533; }
+.table.taken { border-color: #fb718566; opacity: .75; } .table.taken small { color: var(--red); }
+.table:disabled { cursor: not-allowed; }
+.chair { position: absolute; width: 16px; height: 6px; border-radius: 6px; background: currentColor; opacity: .25; }
+.chair.c1 { top: -6px; left: 22%; } .chair.c2 { bottom: -6px; right: 22%; }
+.pond { grid-column: 1 / -1; position: relative; height: 92px; border-radius: 999px; display: grid; place-items: center; overflow: hidden; color: #cdf3f9; font-family: 'Fraunces', Georgia, serif; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; font-size: 13px;
+  background: radial-gradient(ellipse at 30% 30%, #2bc4d8, #0b6f86 70%); box-shadow: inset 0 0 30px #0007; }
+.pond span { position: relative; z-index: 2; text-shadow: 0 2px 6px #0007; }
+.pond .fish { position: absolute; width: 46px; color: #ff9a62; top: 22px; left: 0; animation: pondswim 9s ease-in-out infinite alternate; }
+@keyframes pondswim { from { left: 4%; transform: scaleX(1); } 49% { transform: scaleX(1); } 51% { transform: scaleX(-1); } to { left: 88%; transform: scaleX(-1); } }
+.legend2 { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.lg::before { content: ''; display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 6px; vertical-align: -1px; border: 2px solid; }
+.lg.free::before { border-color: var(--green); } .lg.busy::before { border-color: var(--red); } .lg.sel::before { border-color: var(--coral); background: #ff7a4555; }
+.plan-info { margin: 14px 0 0; color: var(--muted); min-height: 1.5em; }
+
+.foot small { display: block; margin-top: 6px; opacity: .8; }
+.foot a { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .hero { padding: 26px 20px 76px; min-height: 0; }
+  .hero-art { min-height: 120px; }
+  .fish.mini { display: none; }
+  .dish-photo { height: 170px; }
+  .plan { gap: 8px; padding: 12px; }
+  .table { font-size: 17px; border-radius: 14px; }
+  .table small { font-size: 9.5px; }
+  .pond { height: 70px; }
+}
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+.table.on, .table.on:hover:not(:disabled) { border-color: var(--coral); background: #ff7a4533; }

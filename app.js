@@ -17,7 +17,7 @@ const App = (function () {
       { id: 3, name: 'Qora baliq (chorni)', desc: 'Qora (chorni) baliq: zich go‘shtli, mazasi o‘ziga xos.', price: 95000, live: true },
       { id: 4, name: 'Pyostr baliq', desc: 'Dog‘li, rangdor baliq. Tandirda yoki pechda juda mazali.', price: 110000, live: true },
     ],
-    rooms: 10, open: 10, close: 23, hours: 2,
+    rooms: 10, open: 10, close: 23, hours: 1.5,
   };
 
   /* ---------- Yordamchilar ---------- */
@@ -169,46 +169,99 @@ const App = (function () {
     d.innerHTML = '<svg class="fish" viewBox="0 0 80 48" aria-hidden="true"><use href="#i-fish"/></svg><i class="b b1"></i><i class="b b2"></i><i class="b b3"></i>';
     return d;
   }
+  /* ---------- Baliq rasmlari (Wikimedia Commons, ochiq litsenziya) ---------- */
+  const PHOTO_BASE = 'https://commons.wikimedia.org/wiki/Special:FilePath/';
+  const PHOTOS = [
+    { re: /sazan|karp|carp/i, file: 'Common_carp.jpg' },
+    { re: /pyost|pestr|chorni|qora|tolstolob|bighead/i, file: 'Hypophthalmichthys_nobilis_(Bighead_carp).jpg' },
+    { re: /\boq\b|amur|grass/i, file: 'Grass_Carp.jpg' },
+  ];
+  function dishPhoto(m) {
+    const box = h('div', { class: 'dish-photo' }, fishArt(m.name));
+    const hit = PHOTOS.find((p) => p.re.test(m.name));
+    if (hit) {
+      const img = new Image();
+      img.alt = m.name; img.loading = 'lazy'; img.decoding = 'async';
+      img.onload = () => box.classList.add('loaded');
+      img.onerror = () => img.remove();                  // rasm yuklanmasa, chiroyli rangli rasm qoladi
+      img.src = PHOTO_BASE + encodeURIComponent(hit.file) + '?width=640';
+      box.append(img);
+    }
+    if (m.live) box.append(h('span', { class: 'live-badge' }, 'Tirik'));
+    return box;
+  }
+  function flyFish(from) {
+    if (reduceMotion || !from || !from.getBoundingClientRect || !document.body.animate) return;
+    const target = document.querySelector('#nav a[data-go=buyurtma]');
+    if (!target) return;
+    const a = from.getBoundingClientRect(), b = target.getBoundingClientRect();
+    const f = h('div', { class: 'flyfish', 'aria-hidden': 'true' });
+    f.innerHTML = '<svg viewBox="0 0 80 48"><use href="#i-fish"/></svg>';
+    f.style.left = (a.left + a.width / 2 - 18) + 'px'; f.style.top = (a.top + a.height / 2 - 11) + 'px';
+    document.body.append(f);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    f.animate([{ transform: 'translate(0,0) scale(1) rotate(0)', opacity: 1 }, { transform: 'translate(' + dx * 0.5 + 'px,' + (dy * 0.5 - 70) + 'px) scale(1.2) rotate(-14deg)', opacity: 1, offset: 0.5 },
+      { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.3) rotate(8deg)', opacity: 0.2 }], { duration: 750, easing: 'cubic-bezier(.4,.1,.3,1)' }).onfinish = () => {
+      f.remove(); const bd = $('#cartBadge'); if (bd) { bd.classList.remove('bump'); void bd.offsetWidth; bd.classList.add('bump'); }
+    };
+  }
   function stepper(id, onChange) {
     const val = h('b', { class: 'qty' });
     const minus = h('button', { type: 'button', class: 'step', 'aria-label': 'Kamaytirish' }, '−');
     const plus = h('button', { type: 'button', class: 'step', 'aria-label': 'Ko‘paytirish' }, '+');
     const upd = () => { const it = Cart.get(id); val.textContent = it ? kgText(it.kg) : '0 kg'; minus.disabled = !it; plus.disabled = !!it && it.kg >= 20; };
     minus.addEventListener('click', () => { const it = Cart.get(id); Cart.set(id, (it ? it.kg : 0) - 0.5); upd(); onChange && onChange(); });
-    plus.addEventListener('click', () => { const it = Cart.get(id); Cart.set(id, (it ? it.kg : 0) + 0.5); upd(); onChange && onChange(); });
+    plus.addEventListener('click', () => { const it = Cart.get(id); Cart.set(id, (it ? it.kg : 0) + 0.5); upd(); onChange && onChange(); flyFish(plus); });
     upd();
     return h('div', { class: 'stepper' }, minus, val, plus);
+  }
+  function tilt(card) {
+    if (reduceMotion || !matchMedia('(hover: hover)').matches) return;
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = 'perspective(900px) rotateX(' + (-y * 7).toFixed(2) + 'deg) rotateY(' + (x * 9).toFixed(2) + 'deg) translateY(-5px)';
+    });
+    card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+  }
+  function reveal(root) {
+    const els = [...root.querySelectorAll('.reveal')];
+    if (!('IntersectionObserver' in window) || reduceMotion) { els.forEach((e) => e.classList.add('in')); return; }
+    const io = new IntersectionObserver((list) => list.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }), { threshold: 0.12 });
+    els.forEach((e, i) => { e.style.setProperty('--d', (i % 4) * 70 + 'ms'); io.observe(e); });
   }
 
   /* ---------- Sahifa: Menyu ---------- */
   function viewHome(v) {
-    v.append(h('section', { class: 'hero' },
-      h('div', { class: 'hero-txt' },
-        h('span', { class: 'chip-live' }, '● Tirik baliq hovuzdan'),
-        h('h1', null, 'Totli baliq'),
-        h('p', null, 'Hovuzdan stolingizgacha: tirik baliq ham, issiq tayyor taom ham. Oldindan buyurtma bering — kelganingizda hammasi tayyor.'),
-        h('div', { class: 'cta' },
-          h('a', { class: 'btn', href: '#buyurtma' }, 'Buyurtma berish'),
-          h('a', { class: 'btn ghost', href: '#xonalar' }, 'Xona band qilish'))),
-      (() => { const a = h('div', { class: 'hero-art', 'aria-hidden': 'true' });
-        a.innerHTML = '<svg class="fish big" viewBox="0 0 80 48"><use href="#i-fish"/></svg><i class="b b1"></i><i class="b b2"></i><i class="b b3"></i><i class="b b4"></i>'; return a; })()));
-    v.append(h('h2', { class: 'sec' }, 'Bizning baliqlar ', h('small', null, '· narx 1 kg uchun')));
+    const hero = h('section', { class: 'hero' });
+    hero.innerHTML = '<div class="rays" aria-hidden="true"></div>'
+      + '<div class="hero-txt"><span class="chip-live">● Tirik baliq hovuzdan</span>'
+      + '<h1>Totli <em>baliq</em></h1>'
+      + '<p>Hovuzdan stolingizgacha: tirik baliq ham, issiq tayyor taom ham. Oldindan buyurtma bering, kelganingizda hammasi tayyor.</p>'
+      + '<div class="cta"><a class="btn" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" href="#xonalar">Xona band qilish</a></div>'
+      + '<ul class="facts"><li><b>' + MENU.rooms + '</b><span>xona</span></li><li><b>' + MENU.open + ':00–' + MENU.close + ':00</b><span>ish vaqti</span></li><li><b>Tirik</b><span>baliq olib ketish</span></li></ul></div>'
+      + '<div class="hero-art" aria-hidden="true"><svg class="fish big" viewBox="0 0 80 48"><use href="#i-fish"/></svg>'
+      + '<svg class="fish mini m1" viewBox="0 0 80 48"><use href="#i-fish"/></svg><svg class="fish mini m2" viewBox="0 0 80 48"><use href="#i-fish"/></svg>'
+      + '<i class="b b1"></i><i class="b b2"></i><i class="b b3"></i><i class="b b4"></i><i class="b b5"></i></div>'
+      + '<div class="waves" aria-hidden="true"><svg viewBox="0 0 2400 120" preserveAspectRatio="none"><path class="w1" d="M0 60q150-50 300 0t300 0 300 0 300 0 300 0 300 0 300 0 300 0V120H0Z"/></svg>'
+      + '<svg viewBox="0 0 2400 120" preserveAspectRatio="none"><path class="w2" d="M0 70q150 40 300 0t300 0 300 0 300 0 300 0 300 0 300 0 300 0V120H0Z"/></svg></div>';
+    v.append(hero);
+    v.append(h('h2', { class: 'sec reveal' }, 'Bizning baliqlar ', h('small', null, '· narx 1 kg uchun')));
     const grid = h('div', { class: 'menu' });
     MENU.items.forEach((m) => {
-      grid.append(h('article', { class: 'dish' },
-        fishArt(m.name),
+      const card = h('article', { class: 'dish reveal' },
+        dishPhoto(m),
         h('div', { class: 'dish-body' },
           h('h3', null, m.name),
           h('p', null, m.desc),
-          m.live ? h('span', { class: 'tag' }, 'Tirik ham olib ketish mumkin') : null,
-          h('div', { class: 'dish-foot' }, h('b', { class: 'price' }, money(m.price)), stepper(m.id)))));
+          h('div', { class: 'dish-foot' }, h('b', { class: 'price' }, money(m.price)), stepper(m.id))));
+      tilt(card); grid.append(card);
     });
     if (!MENU.items.length) grid.append(h('p', { class: 'note' }, 'Hozircha menyu bo‘sh.'));
     v.append(grid);
     v.append(h('section', { class: 'how' },
-      h('div', null, h('b', null, '1'), h('span', null, 'Baliqni tanlang')),
-      h('div', null, h('b', null, '2'), h('span', null, 'Vaqt va xonani belgilang')),
-      h('div', null, h('b', null, '3'), h('span', null, 'Keling — hammasi tayyor!'))));
+      h('div', { class: 'reveal' }, h('b', null, '1'), h('span', null, 'Baliqni tanlang')),
+      h('div', { class: 'reveal' }, h('b', null, '2'), h('span', null, 'Vaqt va xonani belgilang')),
+      h('div', { class: 'reveal' }, h('b', null, '3'), h('span', null, 'Keling, hammasi tayyor!'))));
   }
 
   /* ---------- Sahifa: Buyurtma ---------- */
@@ -327,28 +380,51 @@ const App = (function () {
     window.scrollTo(0, 0);
   }
 
-  /* ---------- Sahifa: Xonalar ---------- */
+  /* ---------- Sahifa: Xonalar (zal rejasi) ---------- */
+  const hoursText = () => String(MENU.hours).replace('.', ',') + ' soat';
   function viewRooms(v) {
-    let date = todayStr(), busy = [];
-    const grid = h('div', { class: 'roomcards' }), dateSel = h('select', { 'aria-label': 'Sana' });
+    let date = todayStr(), busy = [], pick = 0, time = '';
+    const dateSel = h('select', { 'aria-label': 'Sana' }), timeSel = h('select', { 'aria-label': 'Soat' });
     for (let i = 0; i < 8; i++) { const d = addDays(todayStr(), i); dateSel.append(h('option', { value: d }, dayLabel(d) + ' · ' + dayName(d))); }
-    function draw(loading) {
-      grid.textContent = '';
-      for (let r = 1; r <= MENU.rooms; r++) {
-        const mine = busy.filter((b) => b.room === r).sort((a, b) => a.time.localeCompare(b.time));
-        grid.append(h('div', { class: 'roomcard' + (mine.length ? ' has' : '') },
-          h('div', { class: 'rn' }, String(r)), h('div', { class: 'rinfo' },
-            h('b', null, r + '-xona'),
-            h('small', null, loading ? 'Yuklanmoqda…' : mine.length ? 'Band: ' + mine.map((b) => b.time + '–' + hhmm(toMin(b.time) + MENU.hours * 60)).join(', ') : 'Kun bo‘yi bo‘sh')),
-          h('button', { type: 'button', class: 'small', on: { click: () => { preset = { mode: 'xona', room: r, date: date }; location.hash = '#buyurtma'; } } }, 'Band qilish')));
+    const plan = h('div', { class: 'plan' }), info = h('p', { class: 'plan-info' }), go = h('button', { type: 'button', class: 'btn big', disabled: true }, 'Xonani tanlang');
+    function fillTimes() {
+      const now = tzNow(), keep = timeSel.value; timeSel.textContent = '';
+      for (let m = MENU.open * 60; m < MENU.close * 60; m += 30) {
+        const o = h('option', { value: hhmm(m) }, hhmm(m)); if (date === now.date && m < now.min + 30) o.disabled = true; timeSel.append(o);
       }
+      const ok = [...timeSel.options].filter((o) => !o.disabled);
+      timeSel.value = keep && ok.some((o) => o.value === keep) ? keep : (ok[0] ? ok[0].value : ''); time = timeSel.value;
+    }
+    const isBusy = (r) => busy.some((b) => b.room === r && Math.abs(toMin(b.time) - toMin(time || '00:00')) < MENU.hours * 60);
+    function draw(loading) {
+      plan.textContent = '';
+      const cell = (r) => {
+        const taken = isBusy(r);
+        const b = h('button', { type: 'button', class: 'table t' + r + (taken ? ' taken' : '') + (pick === r ? ' on' : ''), disabled: taken || loading,
+          'aria-label': r + '-xona, ' + (taken ? 'band' : 'bo‘sh') }, h('span', { class: 'chair c1' }), h('span', { class: 'chair c2' }), h('b', null, String(r)), h('small', null, loading ? '…' : taken ? 'band' : 'bo‘sh'));
+        b.addEventListener('click', () => { pick = r; draw(false); });
+        return b;
+      };
+      const half = Math.ceil(MENU.rooms / 2);
+      for (let r = 1; r <= half; r++) plan.append(cell(r));
+      { const pond = h('div', { class: 'pond' }, h('span', null, 'Hovuz')); pond.insertAdjacentHTML('afterbegin', '<svg class="fish" viewBox="0 0 80 48" aria-hidden="true"><use href="#i-fish"/></svg>'); plan.append(pond); }
+      for (let r = half + 1; r <= MENU.rooms; r++) plan.append(cell(r));
+      if (pick && isBusy(pick)) pick = 0;
+      go.disabled = !pick || !time; go.textContent = pick ? pick + '-xonani band qilish' : 'Xonani tanlang';
+      const mine = busy.filter((b) => b.room === pick).sort((a, b) => a.time.localeCompare(b.time));
+      info.textContent = pick ? (pick + '-xona. ' + (mine.length ? 'Shu kuni band: ' + mine.map((b) => b.time + '–' + hhmm(toMin(b.time) + MENU.hours * 60)).join(', ') + '.' : 'Shu kuni bo‘sh.')) : 'Bo‘sh xonani bosing.';
     }
     async function load() { draw(true); try { busy = (await api('busy', { date: date })).busy; } catch (e) { busy = []; toast(e.message); } draw(false); }
-    dateSel.addEventListener('change', () => { date = dateSel.value; load(); });
+    dateSel.addEventListener('change', () => { date = dateSel.value; fillTimes(); load(); });
+    timeSel.addEventListener('change', () => { time = timeSel.value; draw(false); });
+    go.addEventListener('click', () => { if (!pick) return; preset = { mode: 'xona', room: pick, date: date, time: time }; location.hash = '#buyurtma'; });
     v.append(h('h1', { class: 'page-title' }, 'Xonalar'),
-      h('div', { class: 'panel' }, h('div', { class: 'field' }, h('label', null, 'Qaysi kun uchun?'), dateSel),
-        h('p', { class: 'note' }, 'Har bir buyurtma xonani ' + MENU.hours + ' soatga band qiladi. Ish vaqti: ' + MENU.open + ':00–' + MENU.close + ':00.'), grid));
-    load();
+      h('div', { class: 'panel' },
+        h('div', { class: 'two' }, h('div', { class: 'field' }, h('label', null, 'Sana'), dateSel), h('div', { class: 'field' }, h('label', null, 'Soat'), timeSel)),
+        h('div', { class: 'legend2' }, h('span', { class: 'lg free' }, 'Bo‘sh'), h('span', { class: 'lg busy' }, 'Band'), h('span', { class: 'lg sel' }, 'Tanlangan')),
+        plan, info, go,
+        h('p', { class: 'note' }, 'Har bir buyurtma xonani ' + hoursText() + 'ga band qiladi. Ish vaqti: ' + MENU.open + ':00–' + MENU.close + ':00.')));
+    fillTimes(); load();
   }
 
   /* ---------- Yo'naltirish ---------- */
@@ -360,7 +436,7 @@ const App = (function () {
     document.querySelectorAll('#nav a').forEach((a) => a.classList.toggle('on', a.dataset.go === r));
     v.textContent = ''; v.className = 'page';
     ROUTES[r](v);
-    updateBar();
+    updateBar(); reveal(v);
     if (r !== 'buyurtma') window.scrollTo(0, 0);
   }
   const ctx = { h: h, $: $, api: api, Auth: Auth, money: money, kgText: kgText, toast: toast, confetti: confetti, todayStr: todayStr, addDays: addDays, dayName: dayName, dayLabel: dayLabel,
