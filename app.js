@@ -230,19 +230,46 @@ const App = (function () {
     els.forEach((e, i) => { e.style.setProperty('--d', (i % 4) * 70 + 'ms'); io.observe(e); });
   }
 
+
+  /* ---------- Jonli akvarium: dumini qimirlatib suzayotgan baliqlar ---------- */
+  function liveFish(cls, color, w) {
+    return '<svg class="lf ' + cls + '" viewBox="0 0 100 56" style="color:' + color + (w ? ';width:' + w + 'px' : '') + '">'
+      + '<path class="fin" d="M42 12C50 0 64 2 70 12Z" fill="currentColor" opacity=".75"/>'
+      + '<g class="tail"><path d="M26 28L3 8Q12 28 3 48Z" fill="currentColor" opacity=".85"/></g>'
+      + '<path d="M20 28C30 5 70 3 88 28 70 53 30 51 20 28Z" fill="currentColor"/>'
+      + '<path d="M30 28C42 14 62 14 80 28 62 42 42 42 30 28Z" fill="#fff" opacity=".16"/>'
+      + '<path d="M60 12Q54 28 60 44" stroke="#0004" stroke-width="3" fill="none" stroke-linecap="round"/>'
+      + '<circle cx="76" cy="24" r="3.6" fill="#10202a"/><circle cx="77" cy="23" r="1.1" fill="#fff"/></svg>';
+  }
+  function aquarium() {
+    const colors = ['#ff9a62', '#cfe9f1', '#ffd166', '#9fc3a8', '#ff8fa3', '#ffb066', '#b8d8e8'];
+    let s = '<div class="aqua" aria-hidden="true">'
+      + '<video class="aqua-vid" autoplay muted loop playsinline preload="none" poster="" onerror="this.remove()"><source src="akvarium.mp4" type="video/mp4" onerror="this.parentNode.remove()"></video>';
+    const rows = [
+      [10, 64, 17, 0, 0], [22, 44, 23, 5, 1], [34, 92, 21, 11, 0], [47, 36, 28, 2, 1], [58, 70, 19, 8, 0],
+      [68, 52, 25, 14, 1], [76, 30, 31, 6, 0], [16, 38, 34, 19, 1], [52, 80, 26, 17, 0]
+    ];
+    rows.forEach((r, i) => {
+      s += '<div class="sw ' + (r[4] ? 'rtl' : 'ltr') + '" style="top:' + r[0] + '%;--dur:' + r[2] + 's;--del:-' + r[3] + 's">'
+        + '<div class="bob" style="--bd:' + (3 + (i % 4)) + 's">' + liveFish('', colors[i % colors.length], r[1])
+        + '</div></div>';
+    });
+    s += '<div class="weeds"><i style="left:3%;--h:70px"></i><i style="left:6%;--h:104px"></i><i style="left:9%;--h:60px"></i><i style="left:90%;--h:96px"></i><i style="left:94%;--h:64px"></i><i style="left:97%;--h:88px"></i></div>';
+    for (let i = 0; i < 12; i++) s += '<i class="bub" style="left:' + (6 + i * 8 + (i % 3) * 2) + '%;--s:' + (6 + (i % 5) * 3) + 'px;--t:' + (7 + (i % 4) * 2) + 's;--d:-' + (i * 1.3) + 's"></i>';
+    return s + '</div>';
+  }
+
   /* ---------- Sahifa: Menyu ---------- */
   function viewHome(v) {
     const hero = h('section', { class: 'hero' });
-    hero.innerHTML = '<div class="rays" aria-hidden="true"></div>'
+    hero.innerHTML = aquarium() + '<div class="rays" aria-hidden="true"></div>'
       + '<div class="hero-txt"><span class="chip-live">● Tirik baliq hovuzdan</span>'
       + '<h1>Totli <em>baliq</em></h1>'
       + '<p>Tirik baliq to‘g‘ridan-to‘g‘ri hovuzdan: o‘zingiz tanlang, biz tortib beramiz. Oldindan buyurtma bering, kelganingizda baliq tayyor.</p>'
       + '<div class="cta"><a class="btn" href="#buyurtma">Buyurtma berish</a><a class="btn ghost" href="#xonalar">Xona band qilish</a></div>'
       + '<a class="hero-tel" href="tel:+998906962151">Murojaat uchun: <b>+998 90 696 21 51</b></a>'
       + '<ul class="facts"><li><b>' + MENU.rooms + '</b><span>xona</span></li><li><b>' + MENU.open + ':00–' + MENU.close + ':00</b><span>ish vaqti</span></li><li><b>Tirik</b><span>baliq olib ketish</span></li></ul></div>'
-      + '<div class="hero-art" aria-hidden="true"><svg class="fish big" viewBox="0 0 80 48"><use href="#i-fish"/></svg>'
-      + '<svg class="fish mini m1" viewBox="0 0 80 48"><use href="#i-fish"/></svg><svg class="fish mini m2" viewBox="0 0 80 48"><use href="#i-fish"/></svg>'
-      + '<i class="b b1"></i><i class="b b2"></i><i class="b b3"></i><i class="b b4"></i><i class="b b5"></i></div>'
+      + '<div class="hero-art" aria-hidden="true">' + liveFish('big', '#ff9a62') + '</div>'
       + '<div class="waves" aria-hidden="true"><svg viewBox="0 0 2400 120" preserveAspectRatio="none"><path class="w1" d="M0 60q150-50 300 0t300 0 300 0 300 0 300 0 300 0 300 0 300 0V120H0Z"/></svg>'
       + '<svg viewBox="0 0 2400 120" preserveAspectRatio="none"><path class="w2" d="M0 70q150 40 300 0t300 0 300 0 300 0 300 0 300 0 300 0 300 0V120H0Z"/></svg></div>';
     v.append(hero);
