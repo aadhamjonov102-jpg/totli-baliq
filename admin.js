@@ -1,3 +1,4 @@
+/* Totli baliq - admin paneli (v5.1) */
 'use strict';
 /* Totli baliq — admin paneli: statistika, buyurtmalar, menyu, adminlar, profil. */
 const Admin = (function () {
@@ -51,7 +52,7 @@ const Admin = (function () {
   }
   const newCount = () => orders.filter((o) => o.status === 'yangi').length;
 
-  async function loadOrders() { orders = (await C.api('orders')).orders; seenMax = Math.max(seenMax, ...orders.map((o) => o.id), 0); }
+  async function loadOrders() { orders = (await C.api('orders')).orders.filter((o) => Number.isFinite(+o.id) && +o.id > 0).map((o) => Object.assign(o, { items: Array.isArray(o.items) ? o.items.filter((i) => i && typeof i === 'object') : [] })); seenMax = Math.max(seenMax, ...orders.map((o) => o.id), 0); }
   async function poll() {
     try {
       const prev = seenMax; await loadOrders();
@@ -101,7 +102,7 @@ const Admin = (function () {
     });
     // eng ko'p buyurtma qilingan baliqlar
     const kg = {};
-    inWeek.forEach((o) => o.items.forEach((i) => { kg[i.name] = (kg[i.name] || 0) + i.kg; }));
+    inWeek.forEach((o) => (o.items || []).forEach((i) => { kg[i.name] = (kg[i.name] || 0) + i.kg; }));
     const top5 = Object.entries(kg).sort((a, b) => b[1] - a[1]).slice(0, 5), mk = Math.max(1, ...top5.map((x) => x[1]));
     body.textContent = '';
     body.append(grid,
@@ -161,7 +162,7 @@ const Admin = (function () {
         h('span', null, '🕒 ' + dayLabel(o.date) + ', ' + o.time),
         h('span', null, o.mode === 'xona' ? '🏠 ' + o.room + '-xona' : '🛍 Olib ketadi'),
         h('a', { href: 'tel:+998' + o.phone }, '📞 ' + phoneShow(String(o.phone)))),
-      h('ul', { class: 'o-items' }, o.items.map((i) => h('li', null, i.name + ' — ' + C.kgText(i.kg), i.live ? h('span', { class: 'tag live' }, 'TIRIK') : null, h('b', null, money(i.sum))))),
+      h('ul', { class: 'o-items' }, (o.items || []).map((i) => h('li', null, i.name + ' — ' + C.kgText(i.kg), i.live ? h('span', { class: 'tag live' }, 'TIRIK') : null, h('b', null, money(i.sum))))),
       o.note ? h('p', { class: 'o-note' }, '💬 ' + o.note) : null,
       h('div', { class: 'o-foot' }, h('b', { class: 'o-total' }, money(o.total)), h('div', { class: 'btns' }, next)));
   }
